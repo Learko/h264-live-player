@@ -1,30 +1,122 @@
 <html>
-  <head>
-    <title>h264-live-player web client demo</title>
-  </head>
-  <body>
 
-    <button type="button" onclick="wsavc.playStream()">Start Video</button>
-    <button type="button" onclick="wsavc.stopStream()">Stop Video</button>
-    <button type="button" onclick="wsavc.disconnect()">Disconnect</button>
-    <br/>
+<head>
+  <title>h264</title>
+</head>
 
-  <!-- provide WSAvcPlayer -->
-    <script type="text/javascript" src="http-live-player.js">;</script>
-    <script type="text/javascript">
+<body>
+  <audio id="sc_audio" autoplay></audio>
 
-var canvas = document.createElement("canvas");
-document.body.appendChild(canvas);
+  <script type="text/javascript" src="http-live-player.js"></script>
+  <!-- <script type="text/javascript" src="binary.min.js"></script> -->
+  <script type="text/javascript">
+    var canvas = document.createElement("canvas");
+    document.body.insertBefore(canvas, document.body.firstChild);
 
-// Create h264 player
-var uri = "ws://" + document.location.host;
-var wsavc = new WSAvcPlayer(canvas, "webgl", 1, 35);
-wsavc.connect(uri);
+    // Create h264 player.
+    var uri = "ws://" + document.location.host;
+    var wsavc = new WSAvcPlayer(canvas, "webgl", 1, 35);
+    wsavc.connect(uri);
+
+    // Expose instance for button callbacks.
+    window.wsavc = wsavc;
+
+    // Set server --> client audio stream.
+    document.getElementById('sc_audio').setAttribute('src', 'http://' + document.location.hostname + ':8081/audio.wav');
+  </script>
+  <!-- <script type="text/javascript">
+    // Set client -> server audio stream.
+    var host = 'ws://' + document.location.hostname + ':8082';
+    var client = new BinaryClient(host);
 
 
-//expose instance for button callbacks
-window.wsavc = wsavc;
+    // initializing variables;
+    var soundController = {};
+    soundController.recording = false;
 
-    </script>
-  </body>
+    var audioContext = window.AudioContext || window.webkitAudioContext;
+
+    navigator.mediaDevices = navigator.mediaDevices ||
+      ((navigator.mozGetUserMedia || navigator.webkitGetUserMedia) ? {
+        getUserMedia: function (c) {
+          return new Promise(function (y, n) {
+            (navigator.mozGetUserMedia ||
+              navigator.webkitGetUserMedia).call(navigator, c, y, n);
+          });
+        }
+      } : null);
+
+    if (!navigator.mediaDevices) {
+      console.log("getUserMedia() not supported.");
+    }
+
+    soundController.device = navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
+
+    soundController.device.then(function (stream) {
+      var context = new audioContext();
+      var audioInput = context.createMediaStreamSource(stream);
+      var bufferSize = 2048;
+      // create a javascript node
+      soundController.recorder = context.createScriptProcessor(bufferSize, 1, 1);
+      // specify the processing function
+      soundController.recorder.onaudioprocess = soundController.recorderProcess;
+      // connect stream to our recorder
+      audioInput.connect(soundController.recorder);
+      // connect our recorder to the previous destination
+      soundController.recorder.connect(context.destination);
+    });
+
+    soundController.device.catch(function (err) {
+      console.log("The following error occured: " + err.name);
+    });
+
+    function convertFloat32ToInt16(buffer) {
+      l = buffer.length;
+      buf = new Int16Array(l);
+      while (l--) {
+        buf[l] = Math.min(1, buffer[l]) * 0x7FFF;
+      }
+      return buf.buffer;
+    }
+
+    soundController.recorderProcess = function (e) {
+      var left = e.inputBuffer.getChannelData(0);
+      if (soundController.recording === true) {
+        // var chunk = convertFloat32ToInt16(left);
+        var chunk = left;
+        console.dir(chunk);
+        soundController.stream.write(chunk);
+      }
+    };
+
+    soundController.startRecording = function () {
+
+      if (soundController.recording === false) {
+        console.log('>>> Start Recording');
+
+        //open binary stream
+        soundController.stream = client.createStream({ data: 'audio' });
+        soundController.recording = true;
+      }
+
+    };
+
+    soundController.stopRecording = function () {
+
+      if (soundController.recording === true) {
+        console.log('||| Stop Recording');
+
+        soundController.recording = false;
+
+        //close binary stream
+        soundController.stream.end();
+      }
+    };
+  </script> -->
+
+</body>
+
 </html>

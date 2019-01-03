@@ -12,11 +12,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^3.21.2",
+    "binaryjs": "^0.2.1",
+    "express": "^4.16.4",
     "mout": "^1.0.0",
+    "speaker": "^0.4.1",
     "stream-split": "^1.1.0",
     "stream-throttle": "^0.1.3",
-    "ws": "^0.8.0"
+    "ws": "^6.1.2",
+    "ws-audio-api": "^0.1.5"
   },
   "devDependencies": {}
 }
