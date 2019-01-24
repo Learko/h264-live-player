@@ -20,6 +20,21 @@ const app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/vendor/dist'));
 
+// Lock api
+app.get('/lock', (req, res) => {
+  if (req.query.action === 'unlock') {
+    console.log('~~~~~~~~~ UNLOCKED ~~~~~~~~~');
+  }
+  else if (req.query.action === 'reject') {
+    console.log('~~~~~~~~~  LOCKED  ~~~~~~~~~');
+  }
+  else {
+    console.log('~~~~~~~~~   FUCK   ~~~~~~~~~~');
+  }
+
+  res.end();
+});
+
 
 const server = http.createServer(app);
 const silence = new WebStreamerServer(server, {
@@ -42,8 +57,8 @@ const audio_server = http.createServer(function (req, res) {
       res.writeHead(200, { 'Content-Type': 'audio/wav' });
 
       console.log('Spawning arecord');
-      ps = spawn('arecord', ['-f', 'cd']);
-      // ps = spawn('arecord',['-D','hw:1,0','-f','dat']);
+      // ps = spawn('arecord', ['-f', 'cd']);
+      ps = spawn('arecord',['-D','hw:1,0','-f','dat']);
 
       ps.stderr.on('data', function (data) {
         console.log('stderr: ' + data);
@@ -75,9 +90,14 @@ const audio_server = http.createServer(function (req, res) {
 
     } else {
       // TODO: Just kill this motherfucker who took the mic.
-      console.log('USB mic already taken');
-      res.writeHead(503, { 'Content-Type': 'text/html' });
-      res.end('<html><head><title>Service Unavailable</title></head><body>Mic stream is already taken.</body></html>');
+      // console.log('USB mic already taken');
+      // Just like that.
+      ps.kill('SIGHUP');
+      ps = spawn('arecord',['-D','hw:1,0','-f','dat']);
+
+      // res.writeHead(503, { 'Content-Type': 'text/html' });
+      // res.end('<html><head><title>Service Unavailable</title></head><body>Mic stream is already taken.</body></html>');
+      res.end()
     }
   } else if (req.url === '/kill' && ps !== null) {
     console.log('Killing arecord');
