@@ -1,0 +1,99 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto:300,400);
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background-color: black;
+}
+
+h1 {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  margin-top: 1.5em;
+}
+
+.fa {
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+  direction: ltr;
+  font-size: 2rem;
+}
+
+.container {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+
+.container .row.header {
+  flex: 0 1 auto;
+}
+
+.container .row.dashboard {
+  flex: 1 1 auto;
+  display: flex;
+}
+
+.panel {
+  flex: 1 1 auto;
+  display: flex;
+  height: auto;
+
+  align-items: center;
+  justify-content: center;
+
+  background-color: black;
+  color: white;
+}
+
+.panel:hover {
+  color: black;
+  background-color: white;
+  transition: color 0.4s ease-out, background 0.4s ease-out;
+}
+.panel:hover .content:after {
+  content: 'Unlocked';
+  font-size: 3.5rem;
+  color: black;
+  z-index: 1;
+  left: 5rem;
+  bottom: 1em;
+  margin-top: 10rem;
+  transition: all 0.2s 0.2s ease-out;
+}
+.panel:first-child {
+  margin-left: 0;
+}
+.panel:last-child {
+  margin-right: 0;
+}
+
+.content {
+  text-align: center;
+  line-height: 215px;
+}
+
+.content .fa {
+  font-size: 7rem;
+}
+
+.content:after {
+  display: flex;
+  flex-flow: column;
+  content: 'Unlock';
+  font-family: 'Roboto', sans-serif;
+  font-size: 5.0rem;
+  font-weight: 300;
+  line-height: 2em;
+  text-transform: uppercase;
+}
+

@@ -8,6 +8,7 @@
 const http = require('http');
 const express = require('express');
 const spawn = require('child_process').spawn
+const net = require('net');
 
 // Ancient piece of shit.
 // const BinaryServer = require('binaryjs').BinaryServer;
@@ -20,16 +21,34 @@ const app = express();
 app.use(express.static(__dirname + '/public'));
 app.use(express.static(__dirname + '/vendor/dist'));
 
-// Lock api
+// Lock api.
 app.get('/lock', (req, res) => {
   if (req.query.action === 'unlock') {
     console.log('~~~~~~~~~ UNLOCKED ~~~~~~~~~');
+
+    var client = new net.Socket();
+    client.connect(31337, 'localhost', () => {
+      client.write(`${req.connection.remoteAddress} unlock`);
+    });
+
+    client.on('data', (data) => {
+      console.log('Received: ' + data);
+      client.destroy(); // kill client after server's response
+    });
+
+    client.on('close', () => {
+      console.log('Connection closed');
+    });
+
+    client.on('error', (err) => {
+      console.log(err)
+    });
   }
   else if (req.query.action === 'reject') {
     console.log('~~~~~~~~~  LOCKED  ~~~~~~~~~');
   }
   else {
-    console.log('~~~~~~~~~   FUCK   ~~~~~~~~~~');
+    console.log('~~~~~~~~~   NOPE   ~~~~~~~~~~');
   }
 
   res.end();

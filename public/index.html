@@ -2,17 +2,29 @@
 
 <head>
   <title>h264</title>
+  <meta charset="utf8">
+  <link rel="stylesheet" href="lock.css">
+  <link rel="stylesheet" href="fontawesome/css/all.css">
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
 </head>
 
-<body style="margin: 0; padding: 0; height: 100%; overflow: hidden;">
-  <canvas id="stream_canvas"></canvas>
+<body>
+  <div class="container">
+    <canvas id="stream_canvas" class="row header"></canvas>
 
-  <div class="lock">
-      <!-- <button href="/lock/action=unlock" style="font-size: 5em">UNLOCK</button> -->
-      <!-- <button href="/lock/action=reject" style="font-size: 5em">REJECT</button> -->
+    <div class="row dashboard">
+      <div class="panel" onclick="unlock()">
+        <div class="content">
+          <i class="fa fa-lock" id="lock-logo"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="lock">
       <button onclick="lock('unlock');" style="font-size: 5em">UNLOCK</button>
       <button onclick="lock('reject');" style="font-size: 5em">REJECT</button>
-  </div>
+  </div> -->
 
   <script>
     var lock = (action) => {
@@ -22,13 +34,25 @@
     }
   </script>
 
+  <script>
+    var unlock = () => {
+      var lock_logo = document.getElementById('lock-logo');
+
+      if (lock_logo.classList.contains('fa-lock')) {
+
+        lock_logo.classList.remove('fa-lock');
+        lock_logo.classList.add('fa-unlock');
+
+        lock('unlock');
+      }
+    }
+  </script>
+
   <script type="text/javascript" src="http-live-player.js"></script>
   <!-- <script type="text/javascript" src="binary.min.js"></script> -->
   <script type="text/javascript">
-    // var canvas = document.createElement("canvas");
     var canvas = document.getElementById('stream_canvas');
     canvas.style = "width: 100%; height: auto";
-    document.body.insertBefore(canvas, document.body.firstChild);
 
     // Create h264 player.
     var uri = "ws://" + document.location.host;
@@ -37,9 +61,6 @@
 
     // Expose instance for button callbacks.
     window.wsavc = wsavc;
-
-    // Set server --> client audio stream.
-    // document.getElementById('sc_audio').setAttribute('src', 'http://' + document.location.hostname + ':8081/audio.wav');
   </script>
   <!-- <script type="text/javascript">
     // Set client -> server audio stream.
